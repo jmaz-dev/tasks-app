@@ -1,24 +1,31 @@
 package com.devmasterteam.tasks.view
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.ActivityLoginBinding
+import com.devmasterteam.tasks.service.constants.TaskConstants
+import com.devmasterteam.tasks.service.repository.SecurityPreferences
 import com.devmasterteam.tasks.viewmodel.LoginViewModel
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var viewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var securityPreferences: SecurityPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Variáveis da classe
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         binding = ActivityLoginBinding.inflate(layoutInflater)
+        securityPreferences = SecurityPreferences(this)
 
         // Layout
         setContentView(binding.root)
@@ -29,6 +36,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
         // Observadores
         observe()
+
+    }
+
+    // Verifica se usuário está logado
+    override fun onResume() {
+        super.onResume()
+        viewModel.verifyLoggedUser()
     }
 
     override fun onClick(v: View) {
@@ -38,11 +52,34 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun observe() {
+        viewModel.login.observe(this, Observer {
+            it?.let {
+                if (it.status) {
+                    startActivity(Intent(applicationContext, MainActivity::class.java))
+                    finish()
+
+                } else {
+                    binding.editEmail.text.clear()
+                    binding.editPassword.text.clear()
+                    Toast.makeText(applicationContext, it.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
+        viewModel.islogged.observe(this, Observer {
+            if (it) {
+                startActivity(Intent(applicationContext, MainActivity::class.java))
+                finish()
+            }
+        })
     }
 
     private fun handleLogin() {
         val email = binding.editEmail.text.toString()
         val password = binding.editPassword.text.toString()
-        viewModel.doLogin(email, password)
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, R.string.ERROR_NOT_BLANK, Toast.LENGTH_LONG).show()
+
+        } else viewModel.doLogin(email, password)
     }
 }
