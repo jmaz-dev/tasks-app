@@ -25,7 +25,7 @@ class PriorityRepository(val context: Context) {
     }
 
     /*Remote CAll and Local Database inside response*/
-    fun listFromApi(listener: APIListener<Boolean>) {
+    fun listFromApi(listener: APIListener<List<PriorityModel>>) {
         val call = service.getPriority()
         call.enqueue(object : Callback<List<PriorityModel>> {
             override fun onResponse(
@@ -34,13 +34,9 @@ class PriorityRepository(val context: Context) {
             ) {
                 if (response.code() == codeSuccess) {
                     response.body()?.let {
-                        taskDatabase.clear()
-                        taskDatabase.insert(it)
-                        listener.onSuccess(true)
+                        listener.onSuccess(it)
                     }
                 } else listener.onFailure(failResponde(response.errorBody()!!.string()))
-
-
             }
 
             override fun onFailure(call: Call<List<PriorityModel>>, t: Throwable) {
@@ -55,8 +51,8 @@ class PriorityRepository(val context: Context) {
         return taskDatabase.getPriorities()
     }
 
-//    fun setPriorities() {
-//        val priorities = listFromDatabase()
-//        taskDatabase.insert(priorities)
-//    }
+    fun dataBaseSave(list: List<PriorityModel>) {
+        taskDatabase.clear()
+        taskDatabase.insert(list)
+    }
 }
