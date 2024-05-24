@@ -20,6 +20,7 @@ class TaskConstants private constructor() {
 
     object HTTP {
         const val SUCCESS = 200
+        const val BASE_URL = "http://devmasterteam.com/CursoAndroidAPI/"
     }
 
     object BUNDLE {

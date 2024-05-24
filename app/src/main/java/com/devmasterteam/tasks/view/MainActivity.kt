@@ -1,5 +1,6 @@
 package com.devmasterteam.tasks.view
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         binding.appBarMain.fab.setOnClickListener {
+            startActivity(Intent(this.applicationContext, TaskFormActivity::class.java))
         }
 
         // Navegação
@@ -37,7 +39,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
     }
 
     override fun onSupportNavigateUp(): Boolean {

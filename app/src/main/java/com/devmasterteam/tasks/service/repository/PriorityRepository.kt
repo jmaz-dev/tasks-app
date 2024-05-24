@@ -8,21 +8,15 @@ import com.devmasterteam.tasks.service.model.PriorityModel
 import com.devmasterteam.tasks.service.repository.local.TaskDatabase
 import com.devmasterteam.tasks.service.repository.remote.PriorityService
 import com.devmasterteam.tasks.service.repository.remote.RetrofitClient
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PriorityRepository(val context: Context) {
+class PriorityRepository(val context: Context) : BaseRepository() {
 
     private var service = RetrofitClient.getService(PriorityService::class.java)
     private val taskDatabase = TaskDatabase.getDatabase(context).priorityDAO()
 
-    val codeSuccess = TaskConstants.HTTP.SUCCESS
-
-    private fun failResponde(message: String): String {
-        return Gson().fromJson(message, String::class.java)
-    }
 
     /*Remote CAll and Local Database inside response*/
     fun listFromApi(listener: APIListener<List<PriorityModel>>) {
@@ -32,11 +26,7 @@ class PriorityRepository(val context: Context) {
                 call: Call<List<PriorityModel>>,
                 response: Response<List<PriorityModel>>
             ) {
-                if (response.code() == codeSuccess) {
-                    response.body()?.let {
-                        listener.onSuccess(it)
-                    }
-                } else listener.onFailure(failResponde(response.errorBody()!!.string()))
+                handleResponse(response, listener)
             }
 
             override fun onFailure(call: Call<List<PriorityModel>>, t: Throwable) {

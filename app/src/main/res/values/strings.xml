@@ -33,5 +33,7 @@
     <string name="expiradas">Expiradas</string>
     <string name="todas_tarefas">Tarefas</string>
     <string name="proximos_7_dias">Próximos 7 dias</string>
+    <string name="data_limite_text">Data Limite: %1$s</string>
+    <string name="priority_select">Selecione uma prioridade</string>
 
 </resources>

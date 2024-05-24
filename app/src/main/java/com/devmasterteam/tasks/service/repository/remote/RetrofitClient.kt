@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitClient {
     companion object {
 
-        private const val BASE_URL = "http://devmasterteam.com/CursoAndroidAPI/"
+        private const val BASE_URL = TaskConstants.HTTP.BASE_URL
         private lateinit var INSTANCE: Retrofit
 
         private var token: String = ""
@@ -23,8 +23,8 @@ class RetrofitClient {
                 override fun intercept(chain: Interceptor.Chain): Response {
                     val request = chain.request()
                         .newBuilder()
-                        .addHeader(TaskConstants.HEADER.TOKEN_KEY, "")
-                        .addHeader(TaskConstants.HEADER.PERSON_KEY, "")
+                        .addHeader(TaskConstants.HEADER.TOKEN_KEY, token)
+                        .addHeader(TaskConstants.HEADER.PERSON_KEY, personKey)
                         .build()
 
                     return chain.proceed(request)
