@@ -12,33 +12,27 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PriorityRepository(val context: Context) : BaseRepository() {
+class PriorityRepository(context: Context) : BaseRepository(context) {
 
     private var service = RetrofitClient.getService(PriorityService::class.java)
     private val taskDatabase = TaskDatabase.getDatabase(context).priorityDAO()
 
+    companion object {
+        private var priorityCached: List<PriorityModel>? = null
+    }
 
     /*Remote CAll and Local Database inside response*/
     fun listFromApi(listener: APIListener<List<PriorityModel>>) {
         val call = service.getPriority()
-        call.enqueue(object : Callback<List<PriorityModel>> {
-            override fun onResponse(
-                call: Call<List<PriorityModel>>,
-                response: Response<List<PriorityModel>>
-            ) {
-                handleResponse(response, listener)
-            }
+        executeCall(call, listener)
 
-            override fun onFailure(call: Call<List<PriorityModel>>, t: Throwable) {
-                listener.onFailure(context.getString(R.string.ERROR_UNEXPECTED))
-            }
-
-
-        })
     }
 
     fun listFromDatabase(): List<PriorityModel> {
-        return taskDatabase.getPriorities()
+        if (priorityCached == null) {
+            priorityCached = taskDatabase.getPriorities()
+        }
+        return priorityCached as List<PriorityModel>
     }
 
     fun dataBaseSave(list: List<PriorityModel>) {
