@@ -62,6 +62,16 @@ class TaskRepository(context: Context) : BaseRepository(context) {
 
     }
 
+    fun completeTask(id: Int, listener: APIListener<Boolean>) {
+        val call = service.setCompleteTask(id)
+        executeCall(call, listener)
+    }
+
+    fun undoTask(id: Int, listener: APIListener<Boolean>) {
+        val call = service.setUndoTask(id)
+        executeCall(call, listener)
+    }
+
     fun deleteTask(id: Int, listener: APIListener<Boolean>) {
         val call = service.deleteTask(id)
         executeCall(call, listener)

@@ -7,9 +7,11 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.ActivityTaskFormBinding
+import com.devmasterteam.tasks.service.constants.TaskConstants
 import com.devmasterteam.tasks.service.model.TaskModel
 import com.devmasterteam.tasks.viewmodel.TaskFormViewModel
 import java.text.SimpleDateFormat
@@ -44,6 +46,9 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
         // Observer
         observe()
 
+        //LoadFromActivity
+        loadDataFromActivity()
+
     }
 
     override fun onResume() {
@@ -70,6 +75,14 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
+    private fun loadDataFromActivity() {
+        val bundle = intent.extras
+        if (bundle != null) {
+            val id = bundle.getInt(TaskConstants.BUNDLE.TASKID)
+            viewModel.loadTask(id)
+        }
+    }
+
     private fun handleDate() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -79,12 +92,21 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun observe() {
+        /*Load Task*/
+        viewModel.task.observe(this, Observer {
+            binding.editDescription.setText(it.description)
+            binding.checkComplete.isChecked = it.complete
+            binding.buttonDate.text = getString(R.string.data_limite_text, it.dueDate)
+            binding.buttonSave.text = getString(R.string.update_task)
+//     TODO       priorityList.indexOf(it.priorityDescription) & format data
+        })
+        /*Load Priority*/
         viewModel.priorities.observe(this) { it ->
             priorityList = it.map { it.description }
             println(priorityList)
         }
-
-        viewModel.taskSave.observe(this) {
+        /*Message*/
+        viewModel.taskStatus.observe(this) {
             if (it.status) {
                 Toast.makeText(this, getString(R.string.task_created), Toast.LENGTH_SHORT).show()
                 finish()

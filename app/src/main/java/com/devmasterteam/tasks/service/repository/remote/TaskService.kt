@@ -50,7 +50,7 @@ interface TaskService {
         @Field("Id") id: Int,
     ): Call<Boolean>
 
-    @PUT("Task/Complete")
+    @PUT("Task/Undo")
     @FormUrlEncoded
     fun setUndoTask(
         @Field("Id") id: Int,

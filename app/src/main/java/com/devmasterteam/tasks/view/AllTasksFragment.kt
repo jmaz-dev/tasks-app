@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.FragmentAllTasksBinding
 import com.devmasterteam.tasks.service.constants.TaskConstants
 import com.devmasterteam.tasks.service.listener.TaskListener
@@ -47,10 +47,8 @@ class AllTasksFragment : Fragment() {
                 viewModel.deleteTask(id)
             }
 
-            override fun onCompleteClick(id: Int) {
-            }
-
-            override fun onUndoClick(id: Int) {
+            override fun onCompleteClick(id: Int, complete: Boolean) {
+                viewModel.setCompleteTask(id, complete)
             }
 
         }
@@ -74,6 +72,7 @@ class AllTasksFragment : Fragment() {
     }
 
     private fun observe() {
+        /*doList*/
         viewModel.priority.observe(viewLifecycleOwner, Observer {
             priority = it
         })
@@ -82,6 +81,19 @@ class AllTasksFragment : Fragment() {
                 adapter.upadateList(it, priority)
             }
         })
+        /*onDelete*/
+        viewModel.delete.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                Toast.makeText(context, R.string.task_removed, Toast.LENGTH_SHORT).show()
+            }
+        })
+        /*onComplete*/
+        viewModel.complete.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                Toast.makeText(context, R.string.task_updated, Toast.LENGTH_SHORT).show()
+            }
+        })
+        /*onFail*/
         viewModel.fail.observe(viewLifecycleOwner, Observer {
             if (it.isNotBlank()) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -89,4 +101,6 @@ class AllTasksFragment : Fragment() {
         })
 
     }
+
+
 }

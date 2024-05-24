@@ -15,11 +15,6 @@ interface TaskListener {
     /**
      * Completa tarefa
      */
-    fun onCompleteClick(id: Int)
-
-    /**
-     * Descompleta tarefa
-     */
-    fun onUndoClick(id: Int)
+    fun onCompleteClick(id: Int, complete: Boolean)
 
 }

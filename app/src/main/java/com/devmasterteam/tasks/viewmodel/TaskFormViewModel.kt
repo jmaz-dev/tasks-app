@@ -19,8 +19,12 @@ class TaskFormViewModel(application: Application) : AndroidViewModel(application
     private val _priorities = MutableLiveData<List<PriorityModel>>()
     val priorities: LiveData<List<PriorityModel>> = _priorities
 
-    private val _taskSave = MutableLiveData<ValidationModel>()
-    val taskSave: LiveData<ValidationModel> = _taskSave
+    private val _taskStatus = MutableLiveData<ValidationModel>()
+    val taskStatus: LiveData<ValidationModel> = _taskStatus
+
+    private val _task = MutableLiveData<TaskModel>()
+    val task: LiveData<TaskModel> = _task
+
 
     fun loadPriorities() {
         _priorities.value = priorityRepository.listFromDatabase()
@@ -29,15 +33,42 @@ class TaskFormViewModel(application: Application) : AndroidViewModel(application
     fun createTask(task: TaskModel) {
         taskRepository.createTask(task, object : APIListener<Boolean> {
             override fun onSuccess(result: Boolean) {
-                _taskSave.value = ValidationModel(status = result)
+                _taskStatus.value = ValidationModel(status = result)
 
             }
 
             override fun onFailure(result: String) {
-                _taskSave.value = ValidationModel(message = result)
+                _taskStatus.value = ValidationModel(message = result)
 
             }
 
         })
     }
+
+    fun editTask(task: TaskModel) {
+        taskRepository.updateTask(task, object : APIListener<Boolean> {
+            override fun onSuccess(result: Boolean) {
+                _taskStatus.value = ValidationModel(status = result)
+            }
+
+            override fun onFailure(result: String) {
+                _taskStatus.value = ValidationModel(message = result)
+            }
+        })
+    }
+
+    fun loadTask(id: Int) {
+        taskRepository.getById(id, object : APIListener<TaskModel> {
+            override fun onSuccess(result: TaskModel) {
+                _task.value = result
+            }
+
+            override fun onFailure(result: String) {
+                _taskStatus.value = ValidationModel(message = result)
+            }
+
+        })
+    }
+
+
 }
