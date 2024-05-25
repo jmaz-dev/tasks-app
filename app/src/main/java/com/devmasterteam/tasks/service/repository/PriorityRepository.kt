@@ -23,6 +23,10 @@ class PriorityRepository(context: Context) : BaseRepository(context) {
 
     /*Remote CAll and Local Database inside response*/
     fun listFromApi(listener: APIListener<List<PriorityModel>>) {
+        if (!isConnected()) {
+            listener.onFailure(context.getString(R.string.ERROR_INTERNET_CONNECTION))
+            return
+        }
         val call = service.getPriority()
         executeCall(call, listener)
 

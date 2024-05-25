@@ -27,7 +27,7 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
     private lateinit var binding: ActivityTaskFormBinding
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
     private lateinit var priorityList: List<String>
-    private lateinit var dueDateValue: String
+    private var dueDateValue: String = ""
     private var taskId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,7 +148,7 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
             this.description = binding.editDescription.text.toString()
             this.priorityId = binding.spinnerPriority.selectedItemPosition
             this.complete = binding.checkComplete.isChecked
-            this.dueDate = dueDateValue
+            this.dueDate = dueDateValue ?: ""
         }
         if (taskId != 0) {
             viewModel.updateTask(task)

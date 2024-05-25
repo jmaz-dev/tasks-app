@@ -16,6 +16,10 @@ class PersonRepository(context: Context) : BaseRepository(context) {
     var service = RetrofitClient.getService(PersonService::class.java)
 
     fun login(email: String, password: String, listener: APIListener<PersonModel>) {
+        if (!isConnected()) {
+            listener.onFailure(context.getString(R.string.ERROR_INTERNET_CONNECTION))
+            return
+        }
         val call = service.login(email, password)
         executeCall(call, listener)
 
