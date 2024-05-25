@@ -15,16 +15,20 @@ import com.devmasterteam.tasks.service.constants.TaskConstants
 import com.devmasterteam.tasks.service.model.TaskModel
 import com.devmasterteam.tasks.viewmodel.TaskFormViewModel
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Locale
 
 class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
     DatePickerDialog.OnDateSetListener {
 
     private lateinit var viewModel: TaskFormViewModel
     private lateinit var binding: ActivityTaskFormBinding
-    private val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
     private lateinit var priorityList: List<String>
-    private var dueDateValue: String = ""
+    private lateinit var dueDateValue: String
+    private var taskId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +51,9 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
         observe()
 
         //LoadFromActivity
-        loadDataFromActivity()
+        loadDataFromIntent()
+
+        //HandleSpinner
 
     }
 
@@ -75,11 +81,11 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
-    private fun loadDataFromActivity() {
+    private fun loadDataFromIntent() {
         val bundle = intent.extras
         if (bundle != null) {
-            val id = bundle.getInt(TaskConstants.BUNDLE.TASKID)
-            viewModel.loadTask(id)
+            taskId = bundle.getInt(TaskConstants.BUNDLE.TASKID)
+            viewModel.loadTask(taskId)
         }
     }
 
@@ -91,21 +97,31 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
         DatePickerDialog(this, this, year, month, day).show()
     }
 
+    fun formatDate(dueDate: String): String {
+        val toFormat = LocalDate.parse(dueDate, DateTimeFormatter.ISO_LOCAL_DATE)
+
+        // Formatar a data no formato desejado
+        val dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        return toFormat.format(dateFormat)
+    }
+
     private fun observe() {
         /*Load Task*/
         viewModel.task.observe(this, Observer {
+            dueDateValue = formatDate(it.dueDate)
+
             binding.editDescription.setText(it.description)
             binding.checkComplete.isChecked = it.complete
-            binding.buttonDate.text = getString(R.string.data_limite_text, it.dueDate)
+            binding.buttonDate.text = getString(R.string.data_limite_text, dueDateValue)
             binding.buttonSave.text = getString(R.string.update_task)
-//     TODO       priorityList.indexOf(it.priorityDescription) & format data
+            binding.spinnerPriority.setSelection(it.priorityId)
         })
         /*Load Priority*/
         viewModel.priorities.observe(this) { it ->
             priorityList = it.map { it.description }
             println(priorityList)
         }
-        /*Message*/
+        /*Status*/
         viewModel.taskStatus.observe(this) {
             if (it.status) {
                 Toast.makeText(this, getString(R.string.task_created), Toast.LENGTH_SHORT).show()
@@ -127,16 +143,17 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun handleSave() {
-
         val task = TaskModel().apply {
-            this.id = 0
+            this.id = taskId
             this.description = binding.editDescription.text.toString()
             this.priorityId = binding.spinnerPriority.selectedItemPosition
             this.complete = binding.checkComplete.isChecked
             this.dueDate = dueDateValue
         }
-        viewModel.createTask(task)
-
+        if (taskId != 0) {
+            viewModel.updateTask(task)
+        } else
+            viewModel.createTask(task)
     }
 
 

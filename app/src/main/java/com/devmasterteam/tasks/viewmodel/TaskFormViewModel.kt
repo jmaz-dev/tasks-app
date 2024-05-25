@@ -45,7 +45,7 @@ class TaskFormViewModel(application: Application) : AndroidViewModel(application
         })
     }
 
-    fun editTask(task: TaskModel) {
+    fun updateTask(task: TaskModel) {
         taskRepository.updateTask(task, object : APIListener<Boolean> {
             override fun onSuccess(result: Boolean) {
                 _taskStatus.value = ValidationModel(status = result)

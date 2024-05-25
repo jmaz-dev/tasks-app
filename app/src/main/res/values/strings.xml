@@ -7,7 +7,7 @@
     <string name="ERROR_NOT_BLANK">Favor preencher todos os campos.</string>
 
     <string name="task_updated">Tarefa atualizada com sucesso!</string>
-    <string name="task_created">Tarefa criada com sucesso!</string>
+    <string name="task_created">Lista atualizada com sucesso!</string>
     <string name="task_removed">Tarefa removida com sucesso!</string>
 
     <string name="email">E-mail</string>
