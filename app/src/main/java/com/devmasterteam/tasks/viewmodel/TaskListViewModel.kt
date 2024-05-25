@@ -6,16 +6,19 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.devmasterteam.tasks.service.constants.TaskConstants
 import com.devmasterteam.tasks.service.listener.APIListener
 import com.devmasterteam.tasks.service.model.PriorityModel
 import com.devmasterteam.tasks.service.model.TaskModel
 import com.devmasterteam.tasks.service.repository.PriorityRepository
+import com.devmasterteam.tasks.service.repository.SecurityPreferences
 import com.devmasterteam.tasks.service.repository.TaskRepository
 
 class TaskListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val taskRepository = TaskRepository(application.applicationContext)
     private val priorityRepository = PriorityRepository(application.applicationContext)
+    private val securityPreferences = SecurityPreferences(application.applicationContext)
 
     private val _tasks = MutableLiveData<List<TaskModel>>()
     val tasks: LiveData<List<TaskModel>> = _tasks
@@ -39,6 +42,10 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
             }
 
             override fun onFailure(result: String) {
+                if (result == TaskConstants.HTTP.AUTH_ERROR) {
+                    securityPreferences.remove(TaskConstants.SHARED.TOKEN_KEY)
+                    securityPreferences.remove(TaskConstants.SHARED.PERSON_KEY)
+                }
                 _fail.value = result
             }
         })

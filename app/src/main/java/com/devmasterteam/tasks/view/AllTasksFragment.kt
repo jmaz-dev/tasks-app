@@ -96,6 +96,9 @@ class AllTasksFragment : Fragment() {
         /*onFail*/
         viewModel.fail.observe(viewLifecycleOwner, Observer {
             if (it.isNotBlank()) {
+                if (it == TaskConstants.HTTP.AUTH_ERROR) {
+                    startActivity(Intent(context, LoginActivity::class.java))
+                }
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
         })
