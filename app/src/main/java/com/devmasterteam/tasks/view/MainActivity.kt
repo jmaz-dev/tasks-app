@@ -2,6 +2,7 @@ package com.devmasterteam.tasks.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -37,8 +38,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this.applicationContext, TaskFormActivity::class.java))
         }
 
+        //loadUserName
+        viewModel.loadUserName()
+
         // Navegação
         setupNavigation()
+
+        // Observadores
+        observe()
 
     }
 
@@ -78,6 +85,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             true
+        }
+    }
+
+    fun observe() {
+        viewModel.personName.observe(this) {
+            val headerText = binding.navView.getHeaderView(0).findViewById<TextView>(R.id.text_name)
+            headerText.text = getString(R.string.hello, it)
         }
     }
 }

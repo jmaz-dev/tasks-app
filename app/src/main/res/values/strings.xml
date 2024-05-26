@@ -39,5 +39,6 @@
     <string name="priority_select">Selecione uma prioridade</string>
     <string name="confirmar_senha">Confirmar senha</string>
     <string name="as_senhas_n_o_conferem">As senhas não conferem</string>
+    <string name="hello">Olá, %1$s</string>
 
 </resources>
