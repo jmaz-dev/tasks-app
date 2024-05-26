@@ -61,10 +61,10 @@ class TaskRepository(context: Context) : BaseRepository(context) {
             return
         }
         val call = service.newTask(
-            priorityId = task.priorityId,
-            description = task.description,
-            dueDate = task.dueDate,
-            complete = task.complete
+            task.priorityId,
+            task.description,
+            task.dueDate,
+            task.complete
         )
         executeCall(call, listener)
 
@@ -76,11 +76,11 @@ class TaskRepository(context: Context) : BaseRepository(context) {
             return
         }
         val call = service.updateTask(
-            id = task.id,
-            priorityId = task.priorityId,
-            description = task.description,
-            dueDate = task.dueDate,
-            complete = task.complete
+            task.id,
+            task.priorityId,
+            task.description,
+            task.dueDate,
+            task.complete
         )
         executeCall(call, listener)
 

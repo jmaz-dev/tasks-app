@@ -24,4 +24,17 @@ class PersonRepository(context: Context) : BaseRepository(context) {
         executeCall(call, listener)
 
     }
+
+    fun create(name: String, email: String, password: String, listener: APIListener<PersonModel>) {
+        if (!isConnected()) {
+            listener.onFailure(context.getString(R.string.ERROR_INTERNET_CONNECTION))
+            return
+        }
+        val call = service.create(
+            name,
+            email,
+            password
+        )
+        executeCall(call, listener)
+    }
 }
