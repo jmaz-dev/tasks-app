@@ -25,6 +25,7 @@ class AllTasksFragment : Fragment() {
     private val binding get() = _binding!!
     private val adapter = TaskAdapter()
     private lateinit var priority: List<PriorityModel>
+    private var taskFilter = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, b: Bundle?): View {
         viewModel = ViewModelProvider(this)[TaskListViewModel::class.java]
@@ -32,6 +33,8 @@ class AllTasksFragment : Fragment() {
 
         binding.recyclerAllTasks.layoutManager = LinearLayoutManager(context)
         binding.recyclerAllTasks.adapter = adapter
+
+        taskFilter = requireArguments().getInt(TaskConstants.BUNDLE.TASKFILTER, 0)
 
         // Adapter Listener
         val listener = object : TaskListener {
@@ -63,7 +66,7 @@ class AllTasksFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.listPriority()
-        viewModel.listTasks()
+        viewModel.listTasks(taskFilter)
     }
 
     override fun onDestroyView() {
@@ -102,6 +105,7 @@ class AllTasksFragment : Fragment() {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
         })
+
 
     }
 

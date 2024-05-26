@@ -1,11 +1,9 @@
 package com.devmasterteam.tasks.viewmodel
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.devmasterteam.tasks.service.constants.TaskConstants
 import com.devmasterteam.tasks.service.listener.APIListener
 import com.devmasterteam.tasks.service.model.PriorityModel
@@ -18,7 +16,7 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
 
     private val taskRepository = TaskRepository(application.applicationContext)
     private val priorityRepository = PriorityRepository(application.applicationContext)
-    private val securityPreferences = SecurityPreferences(application.applicationContext)
+    private val security = SecurityPreferences(application.applicationContext)
 
     private val _tasks = MutableLiveData<List<TaskModel>>()
     val tasks: LiveData<List<TaskModel>> = _tasks
@@ -35,20 +33,32 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
     private val _complete = MutableLiveData<Boolean>()
     val complete: LiveData<Boolean> = _complete
 
-    fun listTasks() {
-        taskRepository.getAll(object : APIListener<List<TaskModel>> {
+    private var filter = 0
+
+    fun listTasks(taskFilter: Int) {
+        filter = taskFilter
+
+        val listener = object : APIListener<List<TaskModel>> {
             override fun onSuccess(result: List<TaskModel>) {
                 _tasks.value = result
             }
 
             override fun onFailure(result: String) {
                 if (result == TaskConstants.HTTP.AUTH_ERROR) {
-                    securityPreferences.remove(TaskConstants.SHARED.TOKEN_KEY)
-                    securityPreferences.remove(TaskConstants.SHARED.PERSON_KEY)
+                    logout()
                 }
                 _fail.value = result
             }
-        })
+        }
+
+        when (taskFilter) {
+            TaskConstants.FILTER.ALL -> taskRepository.getAll(listener)
+
+            TaskConstants.FILTER.NEXT -> taskRepository.getNext7Days(listener)
+
+            else -> taskRepository.getOverdue(listener)
+        }
+
     }
 
     fun listPriority() {
@@ -58,7 +68,7 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
     fun deleteTask(id: Int) {
         taskRepository.deleteTask(id, object : APIListener<Boolean> {
             override fun onSuccess(result: Boolean) {
-                listTasks()
+                listTasks(filter)
                 _delete.value = result
             }
 
@@ -73,7 +83,7 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
     fun setCompleteTask(id: Int, complete: Boolean) {
         val listener = object : APIListener<Boolean> {
             override fun onSuccess(result: Boolean) {
-                listTasks()
+                listTasks(filter)
                 _complete.value = result
             }
 
@@ -90,5 +100,12 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
             taskRepository.completeTask(id, listener)
         }
     }
+
+    fun logout() {
+        security.remove(TaskConstants.SHARED.TOKEN_KEY)
+        security.remove(TaskConstants.SHARED.PERSON_KEY)
+        security.remove(TaskConstants.SHARED.PERSON_NAME)
+    }
+
 
 }
