@@ -33,6 +33,9 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         // Layout
         setContentView(binding.root)
 
+        //Action bar
+        supportActionBar?.hide()
+
         // Observadores
         observe()
     }

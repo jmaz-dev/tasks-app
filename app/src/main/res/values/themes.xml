@@ -22,4 +22,32 @@
     <style name="Theme.Tasks.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Tasks.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!--customize edit style-->
+    <style name="EditWhite">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="drawableTint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <!--customize button style-->
+    <style name="ButttonPink">
+        <item name="android:layout_marginTop">64dp</item>
+        <item name="android:layout_marginHorizontal">32dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="backgroundTint">@color/pink</item>
+    </style>
+
+    <!--view divider-->
+    <style name="ViewDivider">
+        <item name="android:background">@color/grey_500</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+
+    </style>
+
 </resources>

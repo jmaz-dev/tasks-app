@@ -29,7 +29,6 @@
     <string name="nao_tem_uma_conta">Não tem uma conta?</string>
     <string name="tem_uma_conta">Possui uma conta?</string>
     <string name="cadastre_se">Cadastre-se</string>
-    <string name="logar">Logar</string>
     <string name="entrar">Entrar</string>
     <string name="sair">Sair</string>
     <string name="expiradas">Expiradas</string>
@@ -40,5 +39,6 @@
     <string name="confirmar_senha">Confirmar senha</string>
     <string name="as_senhas_n_o_conferem">As senhas não conferem</string>
     <string name="hello">Olá, %1$s</string>
+    <string name="text_data_limite">Data limite</string>
 
 </resources>

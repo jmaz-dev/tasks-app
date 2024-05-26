@@ -30,6 +30,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         // Layout
         setContentView(binding.root)
 
+        //action bar
+        supportActionBar?.hide()
+
         // Eventos
         binding.buttonLogin.setOnClickListener(this)
         binding.textRegister.setOnClickListener(this)
