@@ -5,9 +5,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.devmasterteam.tasks.service.constants.TaskConstants
+import com.devmasterteam.tasks.service.helper.Logout
 import com.devmasterteam.tasks.service.listener.APIListener
 import com.devmasterteam.tasks.service.model.PriorityModel
 import com.devmasterteam.tasks.service.model.TaskModel
+import com.devmasterteam.tasks.service.model.ValidationModel
 import com.devmasterteam.tasks.service.repository.PriorityRepository
 import com.devmasterteam.tasks.service.repository.SecurityPreferences
 import com.devmasterteam.tasks.service.repository.TaskRepository
@@ -21,8 +23,8 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
     private val _tasks = MutableLiveData<List<TaskModel>>()
     val tasks: LiveData<List<TaskModel>> = _tasks
 
-    private val _fail = MutableLiveData<String>()
-    val fail: LiveData<String> = _fail
+    private val _fail = MutableLiveData<ValidationModel>()
+    val fail: LiveData<ValidationModel> = _fail
 
     private val _priority = MutableLiveData<List<PriorityModel>>()
     val priority: LiveData<List<PriorityModel>> = _priority
@@ -47,7 +49,7 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
                 if (result == TaskConstants.HTTP.AUTH_ERROR) {
                     logout()
                 }
-                _fail.value = result
+                _fail.value = ValidationModel(result, true)
             }
         }
 
@@ -73,14 +75,14 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
             }
 
             override fun onFailure(result: String) {
-                _fail.value = result
+                _fail.value = ValidationModel(result, true)
 
             }
 
         })
     }
 
-    fun setCompleteTask(id: Int, complete: Boolean) {
+    fun setCompleteTask(id: Int, isComplete: Boolean) {
         val listener = object : APIListener<Boolean> {
             override fun onSuccess(result: Boolean) {
                 listTasks(filter)
@@ -88,12 +90,12 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
             }
 
             override fun onFailure(result: String) {
-                _fail.value = result
+                _fail.value = ValidationModel(result, true)
 
             }
 
         }
-        if (complete) {
+        if (isComplete) {
             taskRepository.undoTask(id, listener)
 
         } else {
@@ -102,9 +104,7 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun logout() {
-        security.remove(TaskConstants.SHARED.TOKEN_KEY)
-        security.remove(TaskConstants.SHARED.PERSON_KEY)
-        security.remove(TaskConstants.SHARED.PERSON_NAME)
+        Logout.logout(getApplication())
     }
 
 

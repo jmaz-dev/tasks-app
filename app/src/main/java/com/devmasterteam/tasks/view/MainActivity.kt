@@ -3,6 +3,8 @@ package com.devmasterteam.tasks.view
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.ToggleButton
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -15,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.NavigationUI
 import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.ActivityMainBinding
+import com.devmasterteam.tasks.service.helper.BiometricHelper
 import com.devmasterteam.tasks.service.model.PriorityModel
 import com.devmasterteam.tasks.service.repository.PriorityRepository
 import com.devmasterteam.tasks.viewmodel.MainViewModel
@@ -38,6 +41,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this.applicationContext, TaskFormActivity::class.java))
         }
 
+        //Listener
+        listeners()
+
         //loadUserName
         viewModel.loadUserName()
 
@@ -56,6 +62,26 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun listeners() {
+        val navView = findViewById<NavigationView>(R.id.nav_view)
+
+        val toggleButton = navView.menu.findItem(R.id.toggle_biometric).actionView as ToggleButton
+
+        toggleButton.isChecked = viewModel.isBiometricActive()
+
+        toggleButton.setOnClickListener {
+            if (BiometricHelper.isBiometricAvailable(this)) {
+                viewModel.toggleBiometric(toggleButton.isChecked)
+
+            } else {
+                Toast.makeText(this, getString(R.string.ERROR_BIOMETRICS), Toast.LENGTH_SHORT)
+                    .show()
+                toggleButton.isChecked = false
+            }
+
+        }
     }
 
     private fun setupNavigation() {
@@ -88,7 +114,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun observe() {
+    private fun observe() {
         viewModel.personName.observe(this) {
             val headerText = binding.navView.getHeaderView(0).findViewById<TextView>(R.id.text_name)
             headerText.text = getString(R.string.hello, it)

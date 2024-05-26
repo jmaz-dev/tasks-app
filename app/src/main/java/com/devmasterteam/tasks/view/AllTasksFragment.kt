@@ -58,13 +58,13 @@ class AllTasksFragment : Fragment() {
         adapter.attachListener(listener)
 
         // Cria os observadores
-        observe()
 
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
+        observe()
         viewModel.listPriority()
         viewModel.listTasks(taskFilter)
     }
@@ -98,11 +98,11 @@ class AllTasksFragment : Fragment() {
         })
         /*onFail*/
         viewModel.fail.observe(viewLifecycleOwner, Observer {
-            if (it.isNotBlank()) {
-                if (it == TaskConstants.HTTP.AUTH_ERROR) {
+            if (it.status) {
+                if (it.message == TaskConstants.HTTP.AUTH_ERROR) {
                     startActivity(Intent(context, LoginActivity::class.java))
                 }
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
         })
 

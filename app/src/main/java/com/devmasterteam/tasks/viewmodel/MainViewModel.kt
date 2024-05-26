@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.devmasterteam.tasks.service.constants.TaskConstants
+import com.devmasterteam.tasks.service.helper.Logout
 import com.devmasterteam.tasks.service.repository.SecurityPreferences
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -16,12 +17,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun logout() {
-        security.remove(TaskConstants.SHARED.TOKEN_KEY)
-        security.remove(TaskConstants.SHARED.PERSON_KEY)
-        security.remove(TaskConstants.SHARED.PERSON_NAME)
+        Logout.logout(getApplication())
     }
 
     fun loadUserName() {
         mPersonName.value = security.get(TaskConstants.SHARED.PERSON_NAME)
     }
+
+    fun toggleBiometric(value: Boolean) {
+        security.store(TaskConstants.SHARED.BIOMETRIC, value.toString())
+    }
+
+    fun isBiometricActive(): Boolean {
+        return security.get(TaskConstants.SHARED.BIOMETRIC) == "true"
+    }
+
 }

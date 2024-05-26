@@ -17,6 +17,7 @@ class PriorityRepository(context: Context) : BaseRepository(context) {
     private var service = RetrofitClient.getService(PriorityService::class.java)
     private val taskDatabase = TaskDatabase.getDatabase(context).priorityDAO()
 
+    /*Cache*/
     companion object {
         private var priorityCached: List<PriorityModel>? = null
     }

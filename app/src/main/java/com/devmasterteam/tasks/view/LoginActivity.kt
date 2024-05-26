@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.ActivityLoginBinding
 import com.devmasterteam.tasks.service.constants.TaskConstants
+import com.devmasterteam.tasks.service.helper.BiometricHelper
 import com.devmasterteam.tasks.service.repository.SecurityPreferences
 import com.devmasterteam.tasks.viewmodel.LoginViewModel
 
@@ -30,6 +33,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         // Layout
         setContentView(binding.root)
 
+        //Biometric
+
         //action bar
         supportActionBar?.hide()
 
@@ -45,6 +50,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     // Verifica se usuário está logado
     override fun onResume() {
         super.onResume()
+        viewModel.getPriorities()
         viewModel.verifyLoggedUser()
     }
 
@@ -55,6 +61,15 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
             finish()
         }
+    }
+
+    private fun handleLogin() {
+        val email = binding.editEmail.text.toString()
+        val password = binding.editPassword.text.toString()
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, R.string.ERROR_NOT_BLANK, Toast.LENGTH_LONG).show()
+
+        } else viewModel.doLogin(email, password)
     }
 
     private fun observe() {
@@ -73,19 +88,44 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         })
 
         viewModel.islogged.observe(this, Observer {
-            if (it) {
-                startActivity(Intent(applicationContext, MainActivity::class.java))
-                finish()
+            if (it.status) {
+                handleBiometric()
+                binding.editEmail.text.insert(0, it.message)
+
+            } else {
+                binding.editEmail.text.insert(0, it.message)
             }
         })
     }
 
-    private fun handleLogin() {
-        val email = binding.editEmail.text.toString()
-        val password = binding.editPassword.text.toString()
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, R.string.ERROR_NOT_BLANK, Toast.LENGTH_LONG).show()
 
-        } else viewModel.doLogin(email, password)
+    private fun handleBiometric() {
+
+        biometricAuthentication()
+
     }
+
+    private fun biometricAuthentication() {
+        /*Thread usada*/
+        val executor = ContextCompat.getMainExecutor(this)
+
+        /*Logica do prompt*/
+        val bio =
+            BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    startActivity(Intent(applicationContext, MainActivity::class.java))
+                    finish()
+                    super.onAuthenticationSucceeded(result)
+                }
+            })
+
+        /*Layout*/
+        val info = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Autenticar com biometria")
+            .setNegativeButtonText("Digitar a senha")
+            .build()
+
+        bio.authenticate(info)
+    }
+
 }
