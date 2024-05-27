@@ -88,21 +88,15 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         })
 
         viewModel.islogged.observe(this, Observer {
+            binding.editEmail.text.clear()
             if (it.status) {
-                handleBiometric()
+                biometricAuthentication()
                 binding.editEmail.text.insert(0, it.message)
 
             } else {
                 binding.editEmail.text.insert(0, it.message)
             }
         })
-    }
-
-
-    private fun handleBiometric() {
-
-        biometricAuthentication()
-
     }
 
     private fun biometricAuthentication() {

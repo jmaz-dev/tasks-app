@@ -2,6 +2,7 @@ package com.devmasterteam.tasks.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -13,6 +14,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.NavigationUI
 import com.devmasterteam.tasks.R
@@ -67,13 +69,13 @@ class MainActivity : AppCompatActivity() {
     private fun listeners() {
         val navView = findViewById<NavigationView>(R.id.nav_view)
 
-        val toggleButton = navView.menu.findItem(R.id.toggle_biometric).actionView as ToggleButton
+        val toggleButton = navView.menu.findItem(R.id.toggle_biometric).actionView as Switch
 
         toggleButton.isChecked = viewModel.isBiometricActive()
 
-        toggleButton.setOnClickListener {
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
             if (BiometricHelper.isBiometricAvailable(this)) {
-                viewModel.toggleBiometric(toggleButton.isChecked)
+                viewModel.toggleBiometric(isChecked)
 
             } else {
                 Toast.makeText(this, getString(R.string.ERROR_BIOMETRICS), Toast.LENGTH_SHORT)

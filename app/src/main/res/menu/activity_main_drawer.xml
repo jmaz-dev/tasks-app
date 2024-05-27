@@ -23,7 +23,7 @@
                 android:title="@string/sair" />
         <item
                 android:id="@+id/toggle_biometric"
-                app:actionViewClass="android.widget.ToggleButton"
+                app:actionViewClass="android.widget.Switch"
                 android:title="@string/biometria"
                 android:checked="false" />
     </group>
