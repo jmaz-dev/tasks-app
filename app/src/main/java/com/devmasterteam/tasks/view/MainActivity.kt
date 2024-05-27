@@ -2,10 +2,9 @@ package com.devmasterteam.tasks.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Switch
+import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ToggleButton
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,11 +19,9 @@ import androidx.navigation.ui.NavigationUI
 import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.ActivityMainBinding
 import com.devmasterteam.tasks.service.helper.BiometricHelper
-import com.devmasterteam.tasks.service.model.PriorityModel
-import com.devmasterteam.tasks.service.repository.PriorityRepository
 import com.devmasterteam.tasks.viewmodel.MainViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -57,33 +54,37 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
+        when (buttonView.id) {
+            R.id.toggle_biometric -> {
+                if (BiometricHelper.isBiometricAvailable(this)) {
+                    viewModel.toggleBiometric(isChecked)
+
+                } else {
+                    Toast.makeText(this, getString(R.string.ERROR_BIOMETRICS), Toast.LENGTH_SHORT)
+                        .show()
+                    buttonView.isChecked = false
+                }
+            }
+        }
+    }
+
     private fun listeners() {
         val navView = findViewById<NavigationView>(R.id.nav_view)
+        val toggleButton = navView.menu.findItem(R.id.toggle_biometric).actionView as SwitchCompat
 
-        val toggleButton = navView.menu.findItem(R.id.toggle_biometric).actionView as Switch
-
+        /*Verify if the biometric is active*/
         toggleButton.isChecked = viewModel.isBiometricActive()
 
-        toggleButton.setOnCheckedChangeListener { _, isChecked ->
-            if (BiometricHelper.isBiometricAvailable(this)) {
-                viewModel.toggleBiometric(isChecked)
+        /*Listener*/
+        toggleButton.setOnCheckedChangeListener(this)
 
-            } else {
-                Toast.makeText(this, getString(R.string.ERROR_BIOMETRICS), Toast.LENGTH_SHORT)
-                    .show()
-                toggleButton.isChecked = false
-            }
 
-        }
     }
 
     private fun setupNavigation() {
@@ -122,4 +123,6 @@ class MainActivity : AppCompatActivity() {
             headerText.text = getString(R.string.hello, it)
         }
     }
+
+
 }

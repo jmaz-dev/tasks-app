@@ -40,7 +40,7 @@
     <string name="as_senhas_n_o_conferem">As senhas não conferem</string>
     <string name="hello">Olá, %1$s</string>
     <string name="text_data_limite">Data limite</string>
-    <string name="biometria">Biometria</string>
+    <string name="biometria">Ativar biometria</string>
     <string name="ERROR_BIOMETRICS">Biometria não disponível.</string>
 
 </resources>
